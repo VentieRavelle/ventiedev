@@ -1,581 +1,434 @@
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof gsap !== 'undefined') {
-        gsap.from(".hero-content img", { duration: 1, y: -50, opacity: 0 });
-        gsap.from(".hero-content h1", { duration: 1, x: -50, opacity: 0 });
-        gsap.from(".hero-content p", { duration: 1, x: 50, opacity: 0 });
-        gsap.from(".social-links a", { duration: 1, opacity: 0, stagger: 0.2, delay: 0.5 });
-        gsap.from(".hero-card", { duration: 1, opacity: 0, scale: 0.9, stagger: 0.3, delay: 0.8 });
-    }
-    const avatarImage = document.getElementById('avatar-image');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-
-    const staticAvatars = [
-        'assets/avatar1.jpg', 
-        'assets/avatar2.jpg', 
-        'assets/avatar3.jpg',
-        'assets/avatar4.jpg',
-        'assets/avatar5.jpg',
-        'assets/avatar6.jpg', 
-        'assets/avatar7.jpg', 
-        'assets/avatar8.jpg',
-        'assets/avatar9.jpg', 
-        'assets/avatar10.jpg',
-        'assets/avatar11.jpg',
-        'assets/avatar12.jpg',
-        'assets/avatar13.jpeg', 
-        'assets/avatar14.jpeg',
-        'assets/avatar15.jpeg',
-        'assets/avatar16.jpeg',
-        'assets/avatar17.jpeg',
-        'assets/avatar18.jpeg',
-        'assets/avatar19.jpeg',
-        'assets/avatar20.jpeg',
-        'assets/avatar21.jpeg' 
-    ];
-    const gifAvatars = [
-        'assets/gif1.gif', 
-        'assets/gif2.gif',
-        'assets/gif3.gif',
-        'assets/gif4.gif',
-        'assets/gif5.gif'
-    ];
-
-
-    let avatars = staticAvatars;
-    let currentAvatarIndex = 0;
-    const customSelect = document.querySelector('.custom-select'); 
-    const currentFlag = document.getElementById('current-flag'); 
-    const langDropdown = document.getElementById('lang-dropdown');
-    const i18nKeys = {
-        '1': 'ru', 
-        '2': 'en',
-        '3': 'fr',
-        'ru': 'ru', 
-        'en': 'en',
-        'fr': 'fr'
-    };
-    const i18nDict = {
-        "page.title": { "ru": "Ventie — Портфолио", "en": "Ventie — Portfolio", "fr": "Ventie — Portfolio" },
-        "nav.about": { "ru": "Обо мне", "en": "About Me", "fr": "À Propos" },
-        "about.bio": { "ru": "Биография и CV", "en": "Biography & CV", "fr": "Biographie & CV" },
-        "about.certs": { "ru": "Сертификаты и Квалификация", "en": "Certifications & Qualifications", "fr": "Certificats & Qualifications" },
-        "about.accred": { "ru": "Аккредитации", "en": "Accreditations", "fr": "Accréditations" },
-        "about.awards": { "ru": "Награды и Признание", "en": "Awards & Recognition", "fr": "Prix & Reconnaissance" },
-        "nav.projects": { "ru": "Проекты", "en": "Projects", "fr": "Projets" },
-        "projects.main": { "ru": "Основные Проекты (Портфолио)", "en": "Main Projects (Portfolio)", "fr": "Projets Principaux (Portfolio)" },
-        "projects.open": { "ru": "Open Source / GitHub", "en": "Open Source / GitHub", "fr": "Open Source / GitHub" },
-        "projects.freelance": { "ru": "Фриланс и Коммерция", "en": "Freelance & Commerce", "fr": "Freelance & Commerce" },
-        "nav.content": { "ru": "Контент / Блог", "en": "Content / Blog", "fr": "Contenu / Blog" },
-        "content.lyrics": { "ru": "Тексты Песен (Lyrics)", "en": "Lyrics", "fr": "Paroles de Chansons" },
-        "content.articles": { "ru": "Статьи и Туториалы", "en": "Articles & Tutorials", "fr": "Articles & Tutoriels" },
-        "content.research": { "ru": "Научные Публикации", "en": "Scientific Publications", "fr": "Publications Scientifiques" },
-        "content.blog": { "ru": "Личный Блог / Заметки", "en": "Personal Blog / Notes", "fr": "Blog Personnel / Notes" },
-        "nav.download": { "ru": "Скачать", "en": "Download", "fr": "Télécharger" },
-        "download.cv": { "ru": "Скачать Резюме (PDF)", "en": "Download CV (PDF)", "fr": "Télécharger CV (PDF)" },
-        "download.code": { "ru": "Файлы/Код с GitHub", "en": "Files/Code from GitHub", "fr": "Fichiers/Code de GitHub" },
-        "download.assets": { "ru": "Медиа/Прес-кит", "en": "Media/Press Kit", "fr": "Média/Dossier de Presse" },
-        "nav.details": { "ru": "Система / Детали", "en": "System / Details", "fr": "Système / Détails" },
-        "system.tech": { "ru": "Используемые Технологии", "en": "Used Technologies", "fr": "Technologies Utilisées" },
-        "system.api": { "ru": "API и Интеграции", "en": "API & Integrations", "fr": "API & Intégrations" },
-        "system.privacy": { "ru": "Политика Конфиденциальности", "en": "Privacy Policy", "fr": "Politique de Confidentialité" },
-        "app_menu.header": { "ru": "Сервисы Ventie", "en": "Ventie Services", "fr": "Services Ventie" },
-        "btn.book_library": { "ru": "Перейти в мою библиотеку", "en": "Go to my Library", "fr": "Aller à ma Bibliothèque" },
-        "section.books": { "ru": "Мои книги", "en": "My Books", "fr": "Mes Livres" },
-        "book1.title": { "ru": "Аэстрис: Тайны под замком", "en": "Aestris: Secrets Under Lock", "fr": "Aestris: Secrets Sous Clé" },
-        "book2.title": { "ru": "Проклятие созерцателя", "en": "The Curse of the Contemplator", "fr": "La Malédiction du Contemplateur" },
-        "book3.title": { "ru": "Последняя Сказка", "en": "The Last Fairy Tale", "fr": "Le Dernier Conte de Fées" },
-        "tag.mysticism": { "ru": "#Мистика", "en": "#Mysticism", "fr": "#Mysticisme" },
-        "tag.adventures": { "ru": "#Приключения", "en": "#Adventures", "fr": "#Aventures" },
-        "tag.dark_fantasy": { "ru": "#Темное Фэнтези", "en": "#DarkFantasy", "fr": "#DarkFantasy" },
-        "tag.horror": { "ru": "#Ужасы", "en": "#Horror", "fr": "#Horreur" },
-        "tag.thriller": { "ru": "#Триллер", "en": "#Thriller", "fr": "#Thriller" },
-        "tag.tragedy": { "ru": "#Трагедия", "en": "#Tragedy", "fr": "#Tragédie" },
-        "tag.fantasy": { "ru": "#Фэнтези", "en": "#Fantasy", "fr": "#Fantaisie" },
-        "btn.read": { "ru": "Читать", "en": "Read", "fr": "Lire" },
-        "btn.glossary": { "ru": "Глоссарий", "en": "Glossary", "fr": "Glossaire" },
-        "section.badges": { "ru": "Карточки", "en": "Badges", "fr": "Badges" },
-        "section.history": { "ru": "История", "en": "History", "fr": "Historique" },
-        "section.skills": { "ru": "Навыки", "en": "Skills", "fr": "Compétences" },
-        "skill.python": { "ru": "Python", "en": "Python", "fr": "Python" },
-        "skill.python.desc": { "ru": "Разработка ботов, визуальных новелл и автоматизации.", "en": "Development of bots, visual novels, and automation.", "fr": "Développement de bots, romans visuels et automatisation." },
-        "skill.csharp": { "ru": "C#", "en": "C#", "fr": "C#" },
-        "skill.csharp.desc": { "ru": "Основной язык программирования.", "en": "Primary programming language.", "fr": "Langage de programmation principal." },
-        "skill.htmlcss": { "ru": "HTML5 & CSS3", "en": "HTML5 & CSS3", "fr": "HTML5 & CSS3" },
-        "skill.htmlcss.desc": { "ru": "Современная вёрстка и адаптивный дизайн сайтов.", "en": "Modern layout and responsive website design.", "fr": "Mise en page moderne et design adaptatif." },
-        "skill.javascript": { "ru": "JavaScript", "en": "JavaScript", "fr": "JavaScript" },
-        "skill.javascript.desc": { "ru": "Интерактивные элементы и динамика на сайтах.", "en": "Interactive elements and website dynamics.", "fr": "Éléments interactifs et dynamique de site web." },
-        "skill.writing": { "ru": "Писательство", "en": "Writing", "fr": "Écriture" },
-        "skill.writing.desc": { "ru": "Сценарии, лор, стихи и тексты для проектов.", "en": "Scripts, lore, poetry, and project texts.", "fr": "Scénarios, lore, poésie et textes pour projets." },
-        "skill.music": { "ru": "Музыка", "en": "Music", "fr": "Musique" },
-        "skill.music.desc": { "ru": "Создание саундтреков и озвучка для игр и новелл.", "en": "Creating soundtracks and voice-overs for games and novels.", "fr": "Création de bandes sonores et voix-off pour jeux et romans." },
-        "section.about": { "ru": "Описание", "en": "Description", "fr": "Description" },
-        "section.about.summary": { "ru": "Кратко о сайте Ventie.dev", "en": "Briefly about Ventie.dev", "fr": "Bref aperçu de Ventie.dev" },
-        "btn.read_more": { "ru": "Подробнее", "en": "Read More", "fr": "En Savoir Plus" },
-        "modal.avatar.title": { "ru": "Выберите аватар", "en": "Select Avatar", "fr": "Sélectionner Avatar" },
-        "modal.avatar.static": { "ru": "Аватарки", "en": "Avatars", "fr": "Avatars" },
-        "modal.avatar.gif": { "ru": "GIFы", "en": "GIFs", "fr": "GIFs" },
-        "modal.auth.login.title": { "ru": "Вход", "en": "Login", "fr": "Connexion" },
-        "modal.auth.register.title": { "ru": "Регистрация", "en": "Register", "fr": "Inscription" },
-        "modal.auth.switch.register": { "ru": "Нет аккаунта? Зарегистрироваться", "en": "No account? Register", "fr": "Pas de compte? S'inscrire" },
-        "modal.auth.switch.login": { "ru": "Уже есть аккаунт? Войти", "en": "Already have an account? Login", "fr": "Déjà un compte? Se connecter" },
-        "modal.auth.forgot": { "ru": "Забыли пароль?", "en": "Forgot Password?", "fr": "Mot de passe oublié?" },
-        "modal.auth.placeholder.username": { "ru": "Имя пользователя", "en": "Username", "fr": "Nom d'utilisateur" },
-        "modal.auth.placeholder.email": { "ru": "Электронная почта", "en": "Email", "fr": "E-mail" },
-        "modal.auth.placeholder.password": { "ru": "Пароль", "en": "Password", "fr": "Mot de passe" },
-        "modal.auth.placeholder.confirm_password": { "ru": "Подтвердите пароль", "en": "Confirm Password", "fr": "Confirmer le mot de passe" },
-        "modal.auth.btn.login": { "ru": "Войти", "en": "Login", "fr": "Se connecter" },
-        "modal.auth.btn.register": { "ru": "Зарегистрироваться", "en": "Register", "fr": "S'inscrire" },
-        
-    };
-
-    /**
-     * Устанавливает язык на странице.
-     * @param {string} langCode - Код языка ('ru', 'en', 'fr').
-     */
-    function setLanguage(langCode) {
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            const translation = i18nDict[key] ? i18nDict[key][langCode] : null;
-            
-            if (translation) {
-                if (key === 'page.title') {
-                    document.title = translation;
-                } else if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
-                     element.setAttribute('placeholder', translation);
-                } else if (key.startsWith('modal.auth.switch.')) {
-                    element.querySelector('a').textContent = translation;
-                } else if (element.closest('.dropdown') && !element.closest('.dropdown-content') && key.startsWith('nav.')) {
-                    const iconSpan = element.querySelector('.dropdown-icon') || document.createElement('span');
-                    if (!iconSpan.classList.contains('dropdown-icon')) {
-                        iconSpan.classList.add('dropdown-icon');
-                        iconSpan.textContent = '▼';
-                    }
-                    element.innerHTML = `${translation} ${iconSpan.outerHTML}`;
-                } else {
-                    element.textContent = translation;
-                }
-            } else {
-            }
-        });
-        localStorage.setItem('lang', langCode);
-    }
-    const savedLangCode = localStorage.getItem('lang') || 'ru';
-    if (customSelect) {
-        const initialValue = Object.keys(i18nKeys).find(key => i18nKeys[key] === savedLangCode);
-        if (initialValue) {
-            customSelect.value = initialValue;
-        }
-        customSelect.addEventListener('change', (event) => {
-            const selectedValue = event.target.value;
-            const langCode = i18nKeys[selectedValue];
-            if (langCode) {
-                setLanguage(langCode);
-            }
-        });
-    }
-    const langToggleBtn = document.getElementById('lang-toggle-btn');
-    const langOptions = langDropdown ? langDropdown.querySelectorAll('.lang-option') : [];
-
-    if (langToggleBtn && langDropdown) {
-        langToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            langDropdown.classList.toggle('active');
-        });
-        document.addEventListener('click', (e) => {
-            if (!langDropdown.contains(e.target) && !langToggleBtn.contains(e.target)) {
-                langDropdown.classList.remove('active');
-            }
-        });
-        langOptions.forEach(option => {
-            option.addEventListener('click', (e) => {
-                e.preventDefault();
-                const newLang = option.getAttribute('data-lang');
-                const newFlagSrc = option.querySelector('.flag-icon').src;
-                const newFlagAlt = option.querySelector('.flag-icon').alt;
-                if (currentFlag) {
-                    currentFlag.src = newFlagSrc;
-                    currentFlag.alt = newFlagAlt;
-                }
-                langDropdown.classList.remove('active');
-                if (newLang) {
-                    setLanguage(newLang);
-                }
-            });
-            if (option.getAttribute('data-lang') === savedLangCode && currentFlag) {
-                currentFlag.src = option.querySelector('.flag-icon').src;
-                currentFlag.alt = option.querySelector('.flag-icon').alt;
-            }
-        });
-    }
-    setLanguage(savedLangCode);
-    let updateAvatar; 
+function findDropdownTrigger(dropdownElement) {
+    const triggerByControls = dropdownElement.id ? document.querySelector(`[aria-controls="${dropdownElement.id}"]`) : null;
+    if (triggerByControls) return triggerByControls;
     
-    if (avatarImage && prevBtn && nextBtn) {
-        updateAvatar = function() {
-            gsap.to(avatarImage, {
-                opacity: 0,
-                duration: 0.3,
-                onComplete: () => {
-                    avatarImage.src = avatars[currentAvatarIndex];
-                    gsap.to(avatarImage, {
-                        opacity: 1,
-                        duration: 0.3
-                    });
-                }
-            });
-        }
+    return dropdownElement.previousElementSibling;
+}
 
-        prevBtn.addEventListener('click', () => {
-            currentAvatarIndex = (currentAvatarIndex - 1 + avatars.length) % avatars.length;
-            updateAvatar();
-        });
+function toggleDropdown(element, trigger) {
+    if (!element || !trigger) return;
 
-        nextBtn.addEventListener('click', () => {
-            currentAvatarIndex = (currentAvatarIndex + 1) % avatars.length;
-            updateAvatar();
-        });
-    }
-    const avatarModal = document.getElementById('avatar-selection-modal');
-    const avatarGrid = document.getElementById('avatar-grid');
-    const closeAvatarModalBtn = document.querySelector('.close-avatar-modal-btn');
-    const filterButtons = document.querySelectorAll('.filter-btn');
+    const isVisible = element.style.display === 'block';
 
-    if (avatarImage && avatarModal && avatarGrid && closeAvatarModalBtn && filterButtons.length > 0) {
-        function openAvatarModal() {
-            avatarModal.classList.add('is-visible');
-        }
-
-        function closeAvatarModal() {
-            avatarModal.classList.remove('is-visible');
-        }
-        
-        function renderAvatars(type) {
-            avatarGrid.innerHTML = '';
+    document.querySelectorAll('.dropdown-content, .lang-dropdown, #app-menu').forEach(d => {
+        if (d !== element && d.style.display === 'block') {
+            d.style.display = 'none';
             
-            let avatarsToRender = (type === 'static') ? staticAvatars : gifAvatars;
+            const associatedTrigger = findDropdownTrigger(d);
 
-            if (avatarsToRender.length === 0) {
-                avatarGrid.innerHTML = '<p class="text-center text-gray-500">Пока здесь ничего нет...</p>';
-                return;
+            if (associatedTrigger) {
+                associatedTrigger.setAttribute('aria-expanded', 'false');
             }
-
-            avatarsToRender.forEach((avatar, index) => {
-                const li = document.createElement('li');
-                li.classList.add('avatar-item');
-                li.dataset.index = index;
-                li.dataset.type = type;
-                const img = document.createElement('img');
-                img.src = avatar;
-                img.alt = `Avatar ${index + 1}`;
-                li.appendChild(img);
-                avatarGrid.appendChild(li);
-            });
         }
+    });
 
-        renderAvatars('static');
-        avatarImage.addEventListener('click', openAvatarModal);
-        closeAvatarModalBtn.addEventListener('click', closeAvatarModal);
-
-        window.addEventListener('click', (event) => {
-            if (event.target === avatarModal) {
-                closeAvatarModal();
-            }
-        });
-
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                renderAvatars(button.dataset.type);
-            });
-        });
-
-        avatarGrid.addEventListener('click', (event) => {
-            const selectedItem = event.target.closest('.avatar-item');
-            if (selectedItem) {
-                const selectedIndex = parseInt(selectedItem.dataset.index, 10);
-                const type = selectedItem.dataset.type;
-                avatars = (type === 'static') ? staticAvatars : gifAvatars;
-                currentAvatarIndex = selectedIndex;
-                if (updateAvatar) {
-                    updateAvatar(); 
-                } else {
-                    avatarImage.src = avatars[currentAvatarIndex];
-                }
-                
-                closeAvatarModal();
-            }
-        });
-    }
-    const scrollTopBtn = document.getElementById("scrollTopBtn");
-    if (scrollTopBtn) {
-        window.addEventListener("scroll", () => {
-            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                scrollTopBtn.classList.add('show');
-            } else {
-                scrollTopBtn.classList.remove('show');
-            }
-        });
-        scrollTopBtn.addEventListener("click", () => {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        });
-    }
-    const themeToggle = document.getElementById("theme-toggle");
-    if (themeToggle) {
-        function updateThemeIcon(isDark) {
-            themeToggle.querySelector('i').className = isDark 
-                ? 'fas fa-sun' 
-                : 'fas fa-moon'; 
-        }
+    if (isVisible) {
+        element.style.display = 'none';
+        trigger.setAttribute('aria-expanded', 'false');
+    } else {
+        element.style.display = 'block';
+        trigger.setAttribute('aria-expanded', 'true');
         
-        themeToggle.addEventListener("click", () => {
-            document.body.classList.toggle("dark-theme");
-            const isDark = document.body.classList.contains("dark-theme");
-            const theme = isDark ? "dark" : "light";
-            localStorage.setItem("theme", theme);
+        const focusable = element.querySelector('a, button, input');
+        if (focusable) focusable.focus();
+    }
+}
+
+function closeAllDropdowns(e) {
+    if (e.target.closest('.dropdown, .lang-switcher-new, .app-menu-container, #search-toggle-btn, #details-modal.is-active, #auth-modal.active')) {
+        return;
+    }
+
+    document.querySelectorAll('.dropdown-content, .lang-dropdown, #app-menu').forEach(d => {
+        if (d.style.display === 'block') {
+            d.style.display = 'none';
             
-            updateThemeIcon(isDark); 
-        });
-        const savedTheme = localStorage.getItem("theme");
-        const initialIsDark = savedTheme === "dark";
+            const trigger = findDropdownTrigger(d);
 
-        if (initialIsDark) {
-            document.body.classList.add("dark-theme");
+            if (trigger) trigger.setAttribute('aria-expanded', 'false');
         }
-        
-        updateThemeIcon(initialIsDark); 
-    }
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = this.name.value.trim();
-            const email = this.email.value.trim();
-            const message = this.message.value.trim();
-            const successMessage = document.getElementById('contactSuccess');
-            if (!name || !email || !message) {
-                successMessage.innerText = "Пожалуйста, заполните все поля формы.";
-                successMessage.style.color = '#e74c3c';
-            } else {
-                successMessage.innerText = "Сообщение отправлено! (Симуляция)";
-                successMessage.style.color = '#009e60';
-                this.reset();
-            }
-            successMessage.style.display = 'block';
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 3000);
-        });
-    }
-    const aboutBtn = document.getElementById("about-btn");
-    const aboutModal = document.getElementById("about-modal");
-    const modalCloseBtn = document.querySelector(".about-modal-content .modal-close-btn"); // Используем более специфичный селектор
-    if (aboutBtn && aboutModal && modalCloseBtn) {
-        aboutBtn.addEventListener("click", () => {
-            aboutModal.style.display = "block";
-        });
-        modalCloseBtn.addEventListener("click", () => {
-            aboutModal.style.display = "none";
-        });
-        window.addEventListener("click", (event) => {
-            if (event.target === aboutModal) {
-                aboutModal.style.display = "none";
-            }
-        });
-    }
-    const historyContainer = document.getElementById('history-container');
-    if (historyContainer) {
-        fetch('history.json')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Сетевая ошибка или файл не найден');
-                }
-                return response.json();
-            })
-            .then(data => {
-                data.forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.classList.add('timeline-event');
-                    const eventTitle = document.createElement('h4');
-                    eventTitle.innerHTML = `${event.date} <span>— ${event.title}</span>`;
-                    const eventDesc = document.createElement('p');
-                    eventDesc.textContent = event.description; 
-                    eventDiv.appendChild(eventTitle);
-                    eventDiv.appendChild(eventDesc);
-                    historyContainer.appendChild(eventDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Ошибка при загрузке истории:', error);
-                historyContainer.innerHTML = '<p>Не удалось загрузить историю. Проверьте `history.json`.</p>';
+    });
+}
+
+
+function setupModalTabs(modal) {
+    const tabButtons = modal.querySelectorAll('.modal-tabs .tab-button');
+    const tabPanels = modal.querySelectorAll('.modal-body .tab-panel');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetPanelId = button.getAttribute('aria-controls');
+            
+            tabButtons.forEach(btn => {
+                btn.classList.remove('is-active');
+                btn.setAttribute('aria-selected', 'false');
             });
-    }
-    const textElement = document.getElementById('typewriter-text');
-    if (textElement) {
-        const phrases = ["Добро пожаловать", "Есть вопросы? Можешь написать в Телеграм", "Удачи!"];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        function typeWriter() {
-            const currentPhrase = phrases[phraseIndex];
-            if (isDeleting) {
-                textElement.textContent = currentPhrase.substring(0, charIndex--);
-            } else {
-                textElement.textContent = currentPhrase.substring(0, charIndex++);
+            
+            tabPanels.forEach(panel => {
+                panel.classList.remove('is-active');
+                panel.toggleAttribute('hidden', true); 
+            });
+
+            button.classList.add('is-active');
+            button.setAttribute('aria-selected', 'true');
+
+            const targetPanel = document.getElementById(targetPanelId);
+            if (targetPanel) {
+                targetPanel.classList.add('is-active');
+                targetPanel.toggleAttribute('hidden', false);
+
             }
-            let typeSpeed = 100;
-            if (isDeleting) {
-                typeSpeed /= 2;
-            }
-            if (!isDeleting && charIndex === currentPhrase.length + 1) {
-                typeSpeed = 2000;
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 500;
-            }
-            setTimeout(typeWriter, typeSpeed);
+        });
+    });
+}
+
+
+function setupHeroModal() {
+    const trigger = document.getElementById('hero-modal-trigger');
+    const modal = document.getElementById('details-modal');
+
+    if (!trigger || !modal) return;
+    
+    setupModalTabs(modal); 
+
+    modal.setAttribute('aria-hidden', 'true');
+    
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    let lastActiveElement; 
+
+    const openModal = () => {
+        lastActiveElement = document.activeElement; 
+        modal.classList.add('is-active');
+        modal.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        modal.focus();
+    };
+
+    // Функция закрытия
+    const closeModal = () => {
+        modal.classList.remove('is-active');
+        modal.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        if (lastActiveElement) lastActiveElement.focus(); 
+    };
+
+    trigger.addEventListener('click', openModal);
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
         }
-        typeWriter();
-    }
-    const sections = document.querySelectorAll('.fade-in-section');
-    const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        rootMargin: '0px',
-        threshold: 0.2
     });
-    sections.forEach(section => {
-        observer.observe(section);
+
+    modal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        } 
     });
-    const appMenuToggle = document.getElementById('app-menu-toggle');
-    const appMenuDropdown = document.getElementById('app-menu'); 
-    const appMenuContainer = appMenuToggle ? appMenuToggle.closest('.dropdown') : null; 
+}
 
-    if (appMenuToggle && appMenuDropdown && appMenuContainer) {
-        appMenuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            appMenuDropdown.classList.toggle('active');
-            const isExpanded = appMenuDropdown.classList.contains('active');
-            appMenuToggle.setAttribute('aria-expanded', isExpanded);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (appMenuDropdown.classList.contains('active') && !appMenuContainer.contains(e.target)) {
-                appMenuDropdown.classList.remove('active');
-                appMenuToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-    }
+function setupAuthModal() {
     const authModal = document.getElementById('auth-modal');
-    const authBtn = document.getElementById('header-auth-btn');
-    if (authModal && authBtn) {
-        const closeModalBtn = authModal.querySelector('.modal-close-btn');
-        const loginView = document.getElementById('login-view');
-        const registerView = document.getElementById('register-view');
-        const switchToRegister = document.getElementById('switch-to-register');
-        const switchToLogin = document.getElementById('switch-to-login');
-        const modalTitle = authModal.querySelector('.modal-title');
-        const updateAuthModalTitle = (view) => {
-            const key = (view === 'login') ? 'modal.auth.login.title' : 'modal.auth.register.title';
-            const translation = i18nDict[key] ? i18nDict[key][localStorage.getItem('lang') || 'ru'] : (view === 'login' ? 'Вход' : 'Регистрация');
-            if (modalTitle) {
-                modalTitle.textContent = translation;
-            }
-        };
-        const initializeAuthView = () => {
-            if (loginView) loginView.classList.add('active');
-            if (registerView) registerView.classList.remove('active');
-            updateAuthModalTitle('login');
+    if (!authModal) return;
+
+    authModal.setAttribute('aria-hidden', 'true');
+    
+    const loginView = document.getElementById('login-view');
+    const registerView = document.getElementById('register-view');
+    
+    const allTriggers = document.querySelectorAll('.auth-trigger, #header-auth-btn, #header-register-btn');
+    const modalCloseBtn = authModal.querySelector('.modal-close-btn');
+    const switchToRegister = document.getElementById('switch-to-register');
+    const switchToLogin = document.getElementById('switch-to-login');
+    let lastActiveElement;
+
+    const openModal = (view) => {
+        lastActiveElement = document.activeElement;
+        authModal.classList.add('active'); 
+        authModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden'; 
+        
+        const isRegister = view === 'register';
+
+        if (loginView) {
+            loginView.classList.toggle('active', !isRegister);
+            loginView.toggleAttribute('hidden', isRegister);
         }
-        authBtn.addEventListener('click', () => {
-            authModal.classList.add('active');
-            initializeAuthView();
-            authModal.focus(); 
-        });
-        const closeAuthModal = () => {
-            authModal.classList.remove('active');
-        };
-
-        if (closeModalBtn) closeModalBtn.addEventListener('click', closeAuthModal);
-        authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                closeAuthModal();
-            }
-        });
-        if (switchToRegister && switchToLogin) {
-            switchToRegister.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (loginView) loginView.classList.remove('active');
-                if (registerView) registerView.classList.add('active');
-                updateAuthModalTitle('register');
-            });
-
-            switchToLogin.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (registerView) registerView.classList.remove('active');
-                if (loginView) loginView.classList.add('active');
-                updateAuthModalTitle('login');
-            });
+        if (registerView) {
+            registerView.classList.toggle('active', isRegister);
+            registerView.toggleAttribute('hidden', !isRegister);
         }
-    }
-});
-  const appMenuToggle = document.getElementById('app-menu-toggle');
-    const appMenu = document.getElementById('app-menu');
-    if (appMenuToggle && appMenu) {
-        appMenuToggle.addEventListener('click', (event) => {
-            event.stopPropagation();
-            appMenu.classList.toggle('active');
-        });
-        document.addEventListener('click', (event) => {
-            if (!appMenu.contains(event.target) && !appMenuToggle.contains(event.target)) {
-                appMenu.classList.remove('active');
-            }
-        });
-    }
-const authModal = document.getElementById("auth-modal");
-const closeBtn = document.querySelector(".modal-close-btn");
-const loginView = document.getElementById("login-view");
-const registerView = document.getElementById("register-view");
 
-const switchToRegister = document.getElementById("switch-to-register");
-const switchToLogin = document.getElementById("switch-to-login");
-function openAuthModal() {
-    authModal.classList.add("active");
-}
-function closeAuthModal() {
-    authModal.classList.remove("active");
-}
-closeBtn.addEventListener("click", closeAuthModal);
-authModal.addEventListener("click", (e) => {
-    if (e.target === authModal) {
-        closeAuthModal();
-    }
-});
-switchToRegister.addEventListener("click", (e) => {
-    e.preventDefault();
-    loginView.classList.remove("active");
-    registerView.classList.add("active");
-});
+        const activeView = isRegister ? registerView : loginView;
+        const firstInput = activeView ? activeView.querySelector('input') : null;
+        if (firstInput) firstInput.focus();
+    };
 
-switchToLogin.addEventListener("click", (e) => {
-    e.preventDefault();
-    registerView.classList.remove("active");
-    loginView.classList.add("active");
-});
-document.querySelectorAll("[data-oauth]").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const provider = btn.dataset.oauth;
-        window.location.href = `/auth/${provider}`;
+    const closeModal = () => {
+        authModal.classList.remove('active');
+        authModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (lastActiveElement) lastActiveElement.focus();
+    };
+
+    allTriggers.forEach(button => {
+        button.addEventListener('click', () => {
+            const defaultView = button.getAttribute('data-target-view') || 
+                                 (button.id === 'header-auth-btn' ? 'login' : 'register');
+            openModal(defaultView);
+        });
     });
+
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+
+    authModal.addEventListener('click', (e) => {
+        if (e.target === authModal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && authModal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    if (switchToRegister) {
+        switchToRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('register');
+        });
+    }
+
+    if (switchToLogin) {
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal('login');
+        });
+    }
+}
+
+function setupThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    
+    const applyTheme = (isDark) => {
+        const icon = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        const label = isDark ? 'Переключить светлую тему' : 'Переключить темную тему';
+
+        document.body.classList.toggle('dark-theme', isDark);
+        themeToggle.innerHTML = icon;
+        themeToggle.setAttribute('aria-label', label);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    };
+
+    applyTheme(currentTheme === 'dark');
+
+    themeToggle.addEventListener('click', () => {
+        const newIsDark = !document.body.classList.contains('dark-theme');
+        applyTheme(newIsDark);
+    });
+}
+
+function setupNavigation() {
+    
+    document.querySelectorAll('.dropdown > a[aria-haspopup="true"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const dropdownContent = link.nextElementSibling;
+            if (dropdownContent && dropdownContent.classList.contains('dropdown-content')) {
+                toggleDropdown(dropdownContent, link);
+            }
+        });
+    });
+
+    const appMenuToggle = document.getElementById('app-menu-toggle');
+    const appMenu = document.getElementById('app-menu'); 
+    if (appMenuToggle && appMenu) {
+        appMenuToggle.addEventListener('click', () => {
+            toggleDropdown(appMenu, appMenuToggle);
+        });
+    }
+
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    const langDropdown = document.getElementById('lang-dropdown');
+    if (langToggleBtn && langDropdown) {
+        langToggleBtn.addEventListener('click', () => {
+            toggleDropdown(langDropdown, langToggleBtn);
+        });
+    }
+
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    const desktopNav = document.querySelector('nav.desktop-nav'); 
+
+    if (mobileMenuToggle && mobileNav && desktopNav) {
+        if (mobileNav.children.length === 0) {
+            const clonedNav = desktopNav.cloneNode(true);
+            clonedNav.classList.remove('desktop-nav'); 
+            mobileNav.appendChild(clonedNav);
+        }
+
+        const toggleMobileMenu = (forceClose = false) => {
+            const isOpened = mobileNav.classList.contains('is-open') && !forceClose;
+
+
+            mobileNav.classList.toggle('is-open', !isOpened);
+            
+            mobileMenuToggle.setAttribute('aria-expanded', isOpened ? 'false' : 'true');
+            mobileMenuToggle.innerHTML = isOpened ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
+            document.body.style.overflow = isOpened ? '' : 'hidden';
+
+        };
+        
+        mobileMenuToggle.addEventListener('click', () => toggleMobileMenu());
+
+        window.addEventListener('resize', () => {
+            const breakpoint = 992; 
+            if (window.innerWidth > breakpoint && mobileNav.classList.contains('is-open')) {
+                toggleMobileMenu(true); 
+            }
+        });
+    }
+
+    document.addEventListener('click', closeAllDropdowns);
+}
+
+
+function setupSearchBar() {
+    const searchToggleBtn = document.getElementById('search-toggle-btn');
+    const searchBarContainer = document.getElementById('search-bar-container');
+    const searchCloseBtn = document.getElementById('search-close-btn');
+    const searchInput = document.getElementById('search-input');
+    const mainHeader = document.getElementById('main-header');
+
+    if (!searchToggleBtn || !searchBarContainer || !searchCloseBtn || !mainHeader) return;
+
+    const toggleSearch = (close = false) => {
+        const isCurrentlyOpen = searchBarContainer.classList.contains('active');
+        const shouldClose = isCurrentlyOpen || close;
+
+        if (shouldClose) {
+            searchBarContainer.classList.remove('active');
+            mainHeader.classList.remove('search-active');
+            searchToggleBtn.setAttribute('aria-expanded', 'false');
+            searchInput.blur();
+            searchToggleBtn.focus();
+        } else {
+            searchBarContainer.classList.add('active');
+            mainHeader.classList.add('search-active');
+            searchToggleBtn.setAttribute('aria-expanded', 'true');
+            setTimeout(() => searchInput.focus(), 300); 
+        }
+    };
+
+    searchToggleBtn.addEventListener('click', () => toggleSearch());
+
+    searchCloseBtn.addEventListener('click', () => toggleSearch(true));
+
+    const searchSubmitBtn = document.getElementById('search-submit-btn');
+    if (searchSubmitBtn) {
+        searchSubmitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                console.log(`Выполняется поиск: ${query}`);
+                toggleSearch(true);
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape" && searchBarContainer.classList.contains('active')) {
+            toggleSearch(true);
+        }
+    });
+}
+
+function setupScrollToTop() {
+    const scrollTopBtn = document.getElementById('scrollTopBtn'); 
+    if (!scrollTopBtn) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add('show');
+        } else {
+            scrollTopBtn.classList.remove('show');
+        }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+function setupSitemapModal() {
+    const trigger = document.getElementById('explore-services-btn');
+    const modal = document.getElementById('sitemap-modal');
+
+    if (!trigger || !modal) {
+        if (trigger) trigger.setAttribute('href', '#subscriptions-hub');
+        return;
+    }
+
+    trigger.removeAttribute('href'); 
+    
+    modal.setAttribute('aria-hidden', 'true');
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    let lastActiveElement;
+
+    const openModal = (e) => 
+        if (e) e.preventDefault(); 
+        
+        lastActiveElement = document.activeElement;
+        modal.classList.add('is-active');
+        modal.setAttribute('aria-hidden', 'false');
+        trigger.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        modal.focus(); 
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('is-active');
+        modal.setAttribute('aria-hidden', 'true');
+        trigger.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        if (lastActiveElement) lastActiveElement.focus();
+    };
+
+    trigger.addEventListener('click', openModal);
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    modal.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        } 
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupHeroModal(); 
+    setupAuthModal();
+    setupThemeToggle();
+    setupNavigation();
+    setupSearchBar(); 
+    setupSitemapModal(); 
+    setupScrollToTop();
+    
+    console.log("Интерактивность сайта полностью загружена и проверена. Карта сайта активна.");
 });
