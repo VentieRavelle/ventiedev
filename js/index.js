@@ -1,15 +1,27 @@
+
+
+/**
+ * Ищет триггер (элемент, который открыл дропдаун) по ID или по предыдущему соседу.
+ */
 function findDropdownTrigger(dropdownElement) {
+    
     const triggerByControls = dropdownElement.id ? document.querySelector(`[aria-controls="${dropdownElement.id}"]`) : null;
     if (triggerByControls) return triggerByControls;
+
     
     return dropdownElement.previousElementSibling;
 }
 
+/**
+ * Переключает видимость элемента и обновляет ARIA-атрибут 'aria-expanded' для кнопки.
+ */
 function toggleDropdown(element, trigger) {
     if (!element || !trigger) return;
 
+    
     const isVisible = element.style.display === 'block';
 
+    
     document.querySelectorAll('.dropdown-content, .lang-dropdown, #app-menu').forEach(d => {
         if (d !== element && d.style.display === 'block') {
             d.style.display = 'none';
@@ -22,6 +34,7 @@ function toggleDropdown(element, trigger) {
         }
     });
 
+    
     if (isVisible) {
         element.style.display = 'none';
         trigger.setAttribute('aria-expanded', 'false');
@@ -34,7 +47,11 @@ function toggleDropdown(element, trigger) {
     }
 }
 
+/**
+ * Обрабатывает клики вне дропдаунов для их автоматического закрытия.
+ */
 function closeAllDropdowns(e) {
+    
     if (e.target.closest('.dropdown, .lang-switcher-new, .app-menu-container, #search-toggle-btn, #details-modal.is-active, #auth-modal.active')) {
         return;
     }
@@ -51,6 +68,7 @@ function closeAllDropdowns(e) {
 }
 
 
+
 function setupModalTabs(modal) {
     const tabButtons = modal.querySelectorAll('.modal-tabs .tab-button');
     const tabPanels = modal.querySelectorAll('.modal-body .tab-panel');
@@ -58,25 +76,29 @@ function setupModalTabs(modal) {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetPanelId = button.getAttribute('aria-controls');
+
             
             tabButtons.forEach(btn => {
                 btn.classList.remove('is-active');
                 btn.setAttribute('aria-selected', 'false');
             });
+
             
             tabPanels.forEach(panel => {
                 panel.classList.remove('is-active');
                 panel.toggleAttribute('hidden', true); 
             });
 
+            
             button.classList.add('is-active');
             button.setAttribute('aria-selected', 'true');
 
+            
             const targetPanel = document.getElementById(targetPanelId);
             if (targetPanel) {
                 targetPanel.classList.add('is-active');
                 targetPanel.toggleAttribute('hidden', false);
-
+              
             }
         });
     });
@@ -102,10 +124,9 @@ function setupHeroModal() {
         modal.setAttribute('aria-hidden', 'false');
         trigger.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
-        modal.focus();
+        modal.focus(); 
     };
 
-    // Функция закрытия
     const closeModal = () => {
         modal.classList.remove('is-active');
         modal.setAttribute('aria-hidden', 'true');
@@ -128,8 +149,11 @@ function setupHeroModal() {
         if (e.key === 'Escape') {
             closeModal();
         } 
+    
     });
 }
+
+
 
 function setupAuthModal() {
     const authModal = document.getElementById('auth-modal');
@@ -146,8 +170,10 @@ function setupAuthModal() {
     const switchToLogin = document.getElementById('switch-to-login');
     let lastActiveElement;
 
+    /** Открыть модальное окно и показать нужную вкладку */
     const openModal = (view) => {
         lastActiveElement = document.activeElement;
+
         authModal.classList.add('active'); 
         authModal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden'; 
@@ -168,6 +194,7 @@ function setupAuthModal() {
         if (firstInput) firstInput.focus();
     };
 
+    /** Закрыть модальное окно */
     const closeModal = () => {
         authModal.classList.remove('active');
         authModal.setAttribute('aria-hidden', 'true');
@@ -212,6 +239,7 @@ function setupAuthModal() {
     }
 }
 
+
 function setupThemeToggle() {
     const themeToggle = document.getElementById('theme-toggle');
     if (!themeToggle) return;
@@ -236,6 +264,7 @@ function setupThemeToggle() {
     });
 }
 
+
 function setupNavigation() {
     
     document.querySelectorAll('.dropdown > a[aria-haspopup="true"]').forEach(link => {
@@ -247,7 +276,6 @@ function setupNavigation() {
             }
         });
     });
-
     const appMenuToggle = document.getElementById('app-menu-toggle');
     const appMenu = document.getElementById('app-menu'); 
     if (appMenuToggle && appMenu) {
@@ -263,12 +291,12 @@ function setupNavigation() {
             toggleDropdown(langDropdown, langToggleBtn);
         });
     }
-
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const mobileNav = document.getElementById('mobile-nav');
     const desktopNav = document.querySelector('nav.desktop-nav'); 
 
     if (mobileMenuToggle && mobileNav && desktopNav) {
+        
         if (mobileNav.children.length === 0) {
             const clonedNav = desktopNav.cloneNode(true);
             clonedNav.classList.remove('desktop-nav'); 
@@ -278,11 +306,11 @@ function setupNavigation() {
         const toggleMobileMenu = (forceClose = false) => {
             const isOpened = mobileNav.classList.contains('is-open') && !forceClose;
 
-
             mobileNav.classList.toggle('is-open', !isOpened);
             
             mobileMenuToggle.setAttribute('aria-expanded', isOpened ? 'false' : 'true');
             mobileMenuToggle.innerHTML = isOpened ? '<i class="fas fa-bars"></i>' : '<i class="fas fa-times"></i>';
+            
             document.body.style.overflow = isOpened ? '' : 'hidden';
 
         };
@@ -339,11 +367,11 @@ function setupSearchBar() {
             const query = searchInput.value.trim();
             if (query) {
                 console.log(`Выполняется поиск: ${query}`);
-                toggleSearch(true);
+                toggleSearch(true); 
             }
         });
     }
-
+    
     document.addEventListener('keydown', (e) => {
         if (e.key === "Escape" && searchBarContainer.classList.contains('active')) {
             toggleSearch(true);
@@ -385,7 +413,7 @@ function setupSitemapModal() {
     const closeBtn = modal.querySelector('.modal-close-btn');
     let lastActiveElement;
 
-    const openModal = (e) => 
+    const openModal = (e) => {
         if (e) e.preventDefault(); 
         
         lastActiveElement = document.activeElement;
