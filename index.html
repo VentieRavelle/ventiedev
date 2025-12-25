@@ -85,19 +85,13 @@
 
         <div class="controls-group">
 
-            <button id="header-register-btn" class="btn-primary register-btn auth-trigger"
-                    data-i18n="btn.register"
-                    aria-controls="auth-modal"
-                    data-target-view="register"
-                    aria-label="Открыть окно регистрации">
-                <i class="fas fa-user-plus"></i> <span data-i18n="btn.register">Регистрация</span>
-            </button>
-            <button id="header-auth-btn" class="btn-glass login-btn auth-trigger"
-                    data-i18n="btn.login" aria-controls="auth-modal"
-                    data-target-view="login"
-                    aria-label="Открыть окно входа">
-                <i class="fas fa-sign-in-alt"></i> <span data-i18n="btn.login">Вход</span> </button>
-
+       <a href="https://id.ventie.dev/index.php" 
+   id="header-auth-btn" 
+   class="btn-glass login-btn flex items-center gap-2 px-6 py-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all active:scale-95 shadow-lg shadow-blue-500/5"
+   aria-label="Перейти к авторизации">
+    <i class="fas fa-sign-in-alt text-blue-400"></i> 
+    <span class="text-[12px] font-black uppercase italic tracking-widest text-white" data-i18n="btn.login">Вход</span>
+</a>
             <button id="search-toggle-btn" class="utility-btn" aria-label="Открыть поиск">
                 <i class="fas fa-search"></i>
             </button>
@@ -602,47 +596,6 @@
     </footer>
 
     <button id="scrollTopBtn" class="utility-btn scroll-top-btn" title="Наверх" aria-label="Прокрутить страницу наверх"><i class="fas fa-arrow-up"></i></button>
-
-    <div id="auth-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="login-title"> 
-        <div class="modal-content">
-            <button class="modal-close-btn" aria-label="Закрыть модальное окно" data-dismiss="modal">&times;</button>
-<div id="login-view" class="auth-view active" role="tabpanel" aria-labelledby="login-title">
-                <h3 class="modal-title" id="login-title">Вход</h3>
-                <div class="divider"><span>или</span></div>
-                <form class="auth-form" action="/login" method="POST">
-                    <input type="email" placeholder="Email" required aria-label="Email" autocomplete="username">
-                    <input type="password" placeholder="Пароль" required aria-label="Пароль" autocomplete="current-password">
-
-                    <div class="g-recaptcha" data-sitekey="6LeUEBwsAAAAAMI-P9Lvx6NOEGbywcMGjygFGD-m" data-theme="light"></div>
-                    <div class="recaptcha-margin"></div>
-                    
-                    <button type="submit" class="btn-primary">Войти</button>
-                    <a href="#" class="forgot-password">Забыли пароль?</a>
-                    <p class="switch-link">
-                        Нет аккаунта? <a href="#" id="switch-to-register" role="tab" aria-controls="register-view">Регистрация</a>
-                    </p>
-                </form>
-            </div>
-<div id="register-view" class="auth-view" role="tabpanel" aria-labelledby="register-title" hidden>
-                <h3 class="modal-title" id="register-title">Регистрация</h3>
-                <div class="divider"><span>или</span></div>
-                <form class="auth-form" action="/register" method="POST">
-                    <input type="text" placeholder="Имя пользователя" required aria-label="Имя пользователя" autocomplete="username">
-                    <input type="email" placeholder="Email" required aria-label="Email" autocomplete="email">
-                    <input type="password" placeholder="Пароль" required aria-label="Пароль" autocomplete="new-password">
-                    
-                    <div class="g-recaptcha" data-sitekey="6LeUEBwsAAAAAMI-P9Lvx6NOEGbywcMGjygFGD-m" data-theme="light"></div>
-                    <div class="recaptcha-margin"></div>
-                    
-                    <button type="submit" class="btn-primary">Зарегистрироваться</button>
-                    <p class="switch-link">
-                        Уже есть аккаунт? <a href="#" id="switch-to-login" role="tab" aria-controls="login-view">Войти</a>
-                    </p>
-                </form>
-            </div>
-        </div>
-    </div>
-    
     <script src="js/index.js" defer></script>
     <script src="js/skills-tabs.js" defer></script> 
 </body>
